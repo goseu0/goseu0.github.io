@@ -1,1 +1,0 @@
-# goseu0.github.io
