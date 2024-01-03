@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>그라데이션 배경 웹 페이지</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(to right, #8A2BE2, #FFFF00, #3B059F, #FF008C, #12C9CC, #95C100);
+            background-size: 300% 100%;
+            animation: gradientAnimation 10s linear infinite;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            background-color: #333;
+            color: #fff;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #8A2BE2, #FFFF00, #3B059F, #FF008C, #12C9CC, #95C100);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: #fff;
+        }
+
+        p {
+            font-size: 1.5em;
+            color: #fff;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>환영합니다!</h1>
+        <p>이 아름다운 웹 페이지는 뭐가 없습니다.</p>
+        <p>아름다운것을 보고싶다면 <a href="https://www.youtube.com/@waktaverse" target="_blank">여기</a>에서 확인할 수 있습니다.</p>
+    </div>
+</body>
+</html>
