@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>시험 만들기</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: #eef2f7;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        input[type=text], textarea {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .question-box {
+            background: #f9f9f9;
+            padding: 25px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .choice-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-option {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .choice-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .choice-option input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-left: 1px solid #ddd;
+            outline: none;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .remove-btn {
+            text-align: right;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>시험 만들기</h1>
+
+    <form id="examForm" method="POST">
+        <label for="exam_name">시험 이름 (파일 이름):</label>
+        <input type="text" id="exam_name" name="exam_name" placeholder="예: 말조련사3급" required>
+
+        <div id="questions"></div>
+
+        <div class="btn-container">
+            <button type="button" class="btn" onclick="addQuestion()">➕ 문제 추가</button>
+            <button type="submit" class="btn btn-secondary">💾 저장하기</button>
+        </div>
+
+        <input type="hidden" name="data" id="dataField">
+    </form>
+</div>
+
+<script>
+    let questionCount = 0;
+
+    function addQuestion() {
+        questionCount++;
+        const container = document.getElementById('questions');
+
+        const box = document.createElement('div');
+        box.className = 'question-box';
+        box.innerHTML = `
+            <h2>문제 ${questionCount}</h2>
+
+            <label>과목:</label>
+            <input type="text" name="subject${questionCount}" placeholder="예: 마학" required>
+
+            <label>문제 내용:</label>
+            <textarea name="question${questionCount}" rows="3" placeholder="문제를 입력하세요" required></textarea>
+
+            <label>보기 및 정답 선택:</label>
+            <div class="choice-group">
+                ${[0, 1, 2, 3].map(i => `
+                    <div class="choice-option">
+                        <input type="radio" name="answer${questionCount}" value="${i}" required>
+                        <input type="text" name="choice${questionCount}_${i}" placeholder="선택지 ${i + 1}" required>
+                    </div>
+                `).join('')}
+            </div>
+
+            <label>해설:</label>
+            <textarea name="explanation${questionCount}" rows="2" placeholder="선택 사항입니다."></textarea>
+
+            <div class="remove-btn">
+                <button type="button" class="btn btn-danger" onclick="this.closest('.question-box').remove()">🗑 문제 삭제</button>
+            </div>
+        `;
+        container.appendChild(box);
+    }
+
+    document.getElementById('examForm').addEventListener('submit', function (e) {
+        const form = e.target;
+        const formData = new FormData(form);
+        const examName = formData.get('exam_name');
+
+        const questions = [];
+        for (let i = 1; i <= questionCount; i++) {
+            if (!formData.get(`question${i}`)) continue;
+
+            const choices = [
+                formData.get(`choice${i}_0`),
+                formData.get(`choice${i}_1`),
+                formData.get(`choice${i}_2`),
+                formData.get(`choice${i}_3`)
+            ];
+
+            questions.push({
+                number: i,
+                type: examName,
+                subject: formData.get(`subject${i}`),
+                question: formData.get(`question${i}`),
+                choices: choices,
+                answer: parseInt(formData.get(`answer${i}`)),
+                explanation: formData.get(`explanation${i}`)
+            });
+        }
+
+        document.getElementById('dataField').value = JSON.stringify(questions, null, 4);
+    });
+</script>
+</body>
+</html>

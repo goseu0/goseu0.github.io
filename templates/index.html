@@ -1,0 +1,111 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>자격증 필기 연습</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #3b3b98;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .exam-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .exam-button {
+            display: block;
+            width: 200px;
+            padding: 20px;
+            background: #6c5ce7;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .exam-button:hover {
+            background: #4a3fc7;
+        }
+
+        .create-exam {
+            margin-top: 40px;
+        }
+
+        .create-button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 1rem;
+            background: #00b894;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .create-button:hover {
+            background: #019170;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 자격증 필기 연습</h1>
+        <p>응시할 시험을 선택하세요</p>
+
+        <div class="exam-list">
+            {% for exam_file in exams %}
+                <a href="{{ url_for('start_exam', exam_name=exam_file) }}" class="exam-button">
+                    {{ exam_file.replace('.json', '') }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="create-exam">
+            <a href="{{ url_for('create_exam') }}" class="create-button">+ 시험 만들기</a>
+        </div>
+
+        <footer>
+            <p>© 2025 Made by Seo Dong Hyun | All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+[
+    {
+        "number": 1,
+        "type": "정보처리기사",
+        "subject": "마학",
+        "question": "다음 중 CPU의 역할이 아닌 것은?",
+        "choices": ["연산 수행", "명령어 해석", "데이터 저장", "제어 신호 발생"],
+        "answer": 2,
+        "explanation": "데이터 저장은 메모리의 역할입니다."
+    },
+    {
+        "number": 2,
+        "type": "정보처리기사",
+        "subject": "마술학",
+        "question": "프로그래밍 언어 중 컴파일 방식이 아닌 것은?",
+        "choices": ["C", "Java", "Python", "Go"],
+        "answer": 2,
+        "explanation": "Python은 인터프리터 언어입니다."
+    }
+]

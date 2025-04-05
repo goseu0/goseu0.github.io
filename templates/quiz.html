@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>자격증 퀴즈</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .submit-btn {
+            margin-top: 20px;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: green;
+        }
+
+        .explanation {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .navigation {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="question-number">
+            문제 {{ current_idx + 1 }} / {{ total }}
+        </div>
+        <h1>{{ question.question }}</h1>
+
+        <form method="post">
+            {% for choice in question.choices %}
+                <label>
+                    <input type="radio" name="choice" value="{{ loop.index0 }}" required>
+                    {{ choice }}
+                </label>
+            {% endfor %}
+            <button type="submit" class="submit-btn">제출</button>
+        </form>
+
+        {% if show_answer %}
+            <div class="result">
+                {% if correct %}
+                    ✅ 정답입니다!
+                {% else %}
+                    ❌ 틀렸습니다! 정답은 "{{ question.choices[question.answer] }}"입니다.
+                {% endif %}
+            </div>
+            <div class="explanation">
+                {{ question.explanation }}
+            </div>
+            <div class="navigation">
+                <a href="{{ url_for('quiz', qid=question.number + 1) }}">다음 문제 ▶</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

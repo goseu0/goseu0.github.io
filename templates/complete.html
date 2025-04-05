@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>채점 결과</title>
+    <style>
+        body {
+            font-family: 'Arial';
+            background-color: #f9f9f9;
+            text-align: center;
+            padding: 50px;
+        }
+        .result-box {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-box">
+        <h2>채점 결과</h2>
+        <table>
+            <tr>
+                <th>과목</th>
+                <th>점수</th>
+            </tr>
+            {% for result in subject_results %}
+            <tr>
+                <td>{{ result.subject }}</td>
+                <td>{{ result.score }}점</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <p>평균 점수: <strong>{{ average_score }}점</strong></p>
+        <h3 class="{{ 'pass' if passed else 'fail' }}">
+            {{ '🎉 합격입니다!' if passed else '❌ 불합격입니다.' }}
+        </h3>
+        <a href="{{ url_for('reset') }}">처음으로 돌아가기</a>
+    </div>
+</body>
+</html>

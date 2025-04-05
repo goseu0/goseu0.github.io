@@ -1,0 +1,19 @@
+.create-exam {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.create-button {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.create-button:hover {
+    background-color: #45a049;
+}
