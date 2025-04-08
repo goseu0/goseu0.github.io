@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>입장 인원 계산기</title>
+  <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --text-color: #222;
+      --card-bg: #fff;
+      --btn-primary: #4e73df;
+      --btn-secondary: #36b9cc;
+      --btn-reset: #e74a3b;
+    }
+
+    .dark {
+      --bg-color: #1e1e1e;
+      --text-color: #f0f0f0;
+      --card-bg: #2c2c2c;
+      --btn-primary: #5578d4;
+      --btn-secondary: #47c0d9;
+      --btn-reset: #ff5a4a;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .wrapper {
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 10px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .top-bar button {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .input-group label {
+      font-size: 16px;
+      margin-right: 5px;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 15px 0;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    button {
+      padding: 16px;
+      font-size: 18px;
+      border: none;
+      border-radius: 16px;
+      background: var(--btn-primary);
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      filter: brightness(0.95);
+    }
+
+    .btn-secondary { background: var(--btn-secondary); }
+    .btn-reset { background: var(--btn-reset); }
+    .btn-toggle { background: gray; }
+
+    .display {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 500px;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      width: 90px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #aaa;
+      background: white;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-box {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .popup-box input {
+      width: 140px;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 12px;
+      font-size: 13px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="top-bar">
+      <h1>입장 인원 계산기</h1>
+      <button onclick="toggleDarkMode()" class="btn-toggle">🌙 모드 전환</button>
+    </div>
+
+    <!-- 요금 입력 -->
+    <div class="input-group">
+      <label>성인 요금:</label>
+      <input type="number" id="adultPriceInput" value="10000" onchange="updateDisplay()" />원
+      <label>학생 요금:</label>
+      <input type="number" id="studentPriceInput" value="7000" onchange="updateDisplay()" />원
+    </div>
+
+    <!-- 버튼 레이아웃 -->
+    <div class="btn-grid">
+      <button class="btn-secondary" onclick="changeCount('student', 1)">학생</button>
+      <button onclick="openManualInput()">직접입력</button>
+      <button onclick="changeCount('adult', 1)">성인</button>
+      <button class="btn-secondary" onclick="changeCount('student', -1)">학생 -</button>
+      <button class="btn-reset" onclick="resetAll()">초기화</button>
+      <button onclick="changeCount('adult', -1)">성인 -</button>
+    </div>
+
+    <!-- 결과 표시 -->
+    <div class="display" id="info"></div>
+  </div>
+
+  <!-- 직접입력 팝업 -->
+  <div id="popup" class="popup" style="display:none;">
+    <div class="popup-box">
+      <p>추가 금액을 입력하세요</p>
+      <input type="number" id="manualAdd" min="0" /><br><br>
+      <button onclick="applyManualAdd()">확인</button>
+      <button onclick="closeManualInput()" class="btn-reset">닫기</button>
+    </div>
+  </div>
+
+  <footer>ⓒ 2025 키오스크 계산기 | 모든 권리 보유</footer>
+
+  <script>
+    let adult = 0;
+    let student = 0;
+    let manualExtra = 0;
+
+    function getPrices() {
+      return {
+        adultPrice: parseInt(document.getElementById('adultPriceInput').value) || 0,
+        studentPrice: parseInt(document.getElementById('studentPriceInput').value) || 0
+      };
+    }
+
+    function updateDisplay() {
+      const { adultPrice, studentPrice } = getPrices();
+      const baseTotal = adult * adultPrice + student * studentPrice;
+      const finalTotal = baseTotal + manualExtra;
+
+      document.getElementById('info').innerHTML = `
+        👨‍🦳 성인: <strong>${adult}</strong>명<br>
+        🧒 학생: <strong>${student}</strong>명<br>
+        💰 성인요금: ${adultPrice.toLocaleString()} 원<br>
+        💰 학생요금: ${studentPrice.toLocaleString()} 원<br>
+        ➕ 추가 금액: ${manualExtra.toLocaleString()} 원<br>
+        👥 총 인원: <strong>${adult + student}</strong>명<br>
+        💰 총 가격: <strong>${finalTotal.toLocaleString()}</strong> 원
+      `;
+    }
+
+    function changeCount(type, delta) {
+      if (type === 'adult') adult = Math.max(0, adult + delta);
+      if (type === 'student') student = Math.max(0, student + delta);
+      updateDisplay();
+    }
+
+    function openManualInput() {
+      document.getElementById('popup').style.display = 'flex';
+    }
+
+    function closeManualInput() {
+      document.getElementById('popup').style.display = 'none';
+    }
+
+    function applyManualAdd() {
+      const val = parseInt(document.getElementById('manualAdd').value);
+      if (isNaN(val) || val < 0) {
+        alert("올바른 금액을 입력하세요.");
+        return;
+      }
+      manualExtra = val;
+      updateDisplay();
+      closeManualInput();
+    }
+
+    function resetAll() {
+      adult = 0;
+      student = 0;
+      manualExtra = 0;
+      updateDisplay();
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
